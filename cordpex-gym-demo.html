@@ -1,0 +1,2634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IronPulse Gym — Membresía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* =========================================================
+     Paleta tomada del Manual Cordpex pero adaptada a IronPulse
+     - Cordpex Navy #0E1E35 (header, textos)
+     - Cordpex Orange #FD6A18 (acento del gym)
+     - Cordpex Cream #F7ECD7 (fondos suaves)
+     - Cordpex Lavender #C3C9E0 (bordes, divisores)
+     ========================================================= */
+  :root{
+    --navy:#0E1E35;
+    --navy-2:#1a2c47;
+    --orange:#FD6A18;
+    --orange-dark:#e25a0e;
+    --cream:#F7ECD7;
+    --lavender:#C3C9E0;
+    --periwinkle:#7181B5;
+    --teal:#1EA2C1;
+    --bg:#F4F6FB;
+    --white:#ffffff;
+    --shadow-sm: 0 2px 8px rgba(14,30,53,.06);
+    --shadow-md: 0 8px 24px rgba(14,30,53,.10);
+    --shadow-lg: 0 24px 60px rgba(14,30,53,.18);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow-x:hidden}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* Phone frame para simular app móvil whitelabel */
+  .stage{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+    background:
+      radial-gradient(ellipse at top left, rgba(113,129,181,.25), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(253,106,24,.12), transparent 55%),
+      var(--bg);
+  }
+  .phone{
+    width:100%;
+    max-width:400px;
+    height:820px;
+    max-height:90vh;
+    background:var(--white);
+    border-radius:42px;
+    box-shadow:var(--shadow-lg), 0 0 0 8px #0E1E35, 0 0 0 9px #2a3a55;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .notch{
+    position:absolute;
+    top:8px;left:50%;
+    transform:translateX(-50%);
+    width:120px;height:24px;
+    background:#0E1E35;
+    border-radius:0 0 16px 16px;
+    z-index:50;
+  }
+  .status-bar{
+    padding:14px 24px 6px;
+    display:flex;justify-content:space-between;
+    font-size:12px;font-weight:600;
+    color:var(--navy);
+    flex-shrink:0;
+  }
+
+  /* Ocultar TODO scrollbar dentro del phone — coherencia mobile */
+  .phone *::-webkit-scrollbar{
+    width:0;
+    height:0;
+    display:none;
+  }
+  .phone *{
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+
+  /* Screens */
+  .screen{
+    flex:1;
+    overflow-y:auto;
+    overflow-x:hidden;
+    display:none;
+    flex-direction:column;
+    animation:slideIn .35s cubic-bezier(.2,.8,.2,1);
+    /* Ocultar scrollbar — Firefox */
+    scrollbar-width:none;
+    /* Ocultar scrollbar — IE/Edge */
+    -ms-overflow-style:none;
+  }
+  .screen.active{display:flex}
+  /* Ocultar scrollbar — WebKit (Chrome/Safari) */
+  .screen::-webkit-scrollbar,
+  .profile-body::-webkit-scrollbar{
+    width:0;
+    height:0;
+    display:none;
+  }
+  .profile-body{
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+
+  @keyframes slideIn{
+    from{opacity:0;transform:translateX(20px)}
+    to{opacity:1;transform:translateX(0)}
+  }
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* ================== HOME (Membresía) ================== */
+  .hero{
+    height:240px;
+    background:
+      linear-gradient(180deg, rgba(14,30,53,.4) 0%, rgba(14,30,53,.85) 100%),
+      linear-gradient(135deg, #2a3a55 0%, #1a2c47 50%, var(--orange-dark) 200%),
+      url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80') center/cover;
+    position:relative;
+    color:#fff;
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap: 12px;
+  }
+  .gym-brand{
+    display:flex;align-items:center;gap:10px;
+  }
+  .gym-logo{
+    width:42px;height:42px;
+    background:var(--orange);
+    border-radius:10px;
+    display:grid;place-items:center;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:24px;
+    color:#fff;
+    box-shadow:0 4px 12px rgba(253,106,24,.5);
+  }
+  .gym-name{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:22px;
+    letter-spacing:1.5px;
+  }
+  .gym-tag{
+    font-size:10px;
+    opacity:.7;
+    letter-spacing:2px;
+    text-transform:uppercase;
+  }
+  .hero-title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:36px;
+    line-height:1;
+    letter-spacing:1px;
+  }
+  .hero-title em{
+    color:var(--orange);
+    font-style:normal;
+  }
+  .hero-sub{
+    font-size:13px;opacity:.85;margin-top:6px;
+  }
+
+  .home-body{
+    padding:24px 24px 100px;
+  }
+  .section-label{
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--periwinkle);
+    font-weight:700;
+    margin-bottom:12px;
+  }
+
+  .plan-card{
+    background:linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;
+    border-radius:20px;
+    padding:22px;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:18px;
+  }
+  .plan-card::before{
+    content:'';
+    position:absolute;
+    top:-40px;right:-40px;
+    width:160px;height:160px;
+    background:radial-gradient(circle, rgba(253,106,24,.4), transparent 70%);
+    border-radius:50%;
+  }
+  .plan-badge{
+    display:inline-block;
+    background:var(--orange);
+    color:#fff;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:1.5px;
+    padding:5px 10px;
+    border-radius:20px;
+    text-transform:uppercase;
+  }
+  .plan-name{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:32px;
+    margin-top:14px;
+    letter-spacing:1px;
+  }
+  .plan-price{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    margin-top:6px;
+  }
+  .plan-price .num{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:44px;
+    color:var(--orange);
+    line-height:1;
+  }
+  .plan-price .per{
+    font-size:13px;opacity:.7;
+  }
+  .plan-features{
+    list-style:none;
+    margin-top:16px;
+    border-top:1px solid rgba(255,255,255,.12);
+    padding-top:14px;
+    position:relative;z-index:1;
+  }
+  .plan-features li{
+    font-size:13px;
+    margin-bottom:8px;
+    padding-left:22px;
+    position:relative;
+    opacity:.92;
+  }
+  .plan-features li::before{
+    content:'';
+    position:absolute;
+    left:0;top:6px;
+    width:12px;height:12px;
+    border-radius:3px;
+    background:var(--orange);
+  }
+  .plan-features li::after{
+    content:'';
+    position:absolute;
+    left:3px;top:9px;
+    width:6px;height:3px;
+    border-left:2px solid #fff;
+    border-bottom:2px solid #fff;
+    transform:rotate(-45deg);
+  }
+
+  .quick-stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-bottom:24px;
+  }
+  .stat{
+    background:var(--cream);
+    border-radius:14px;
+    padding:14px 10px;
+    text-align:center;
+  }
+  .stat .v{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:24px;
+    color:var(--navy);
+    line-height:1;
+  }
+  .stat .l{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-top:4px;
+    color:var(--navy-2);
+    opacity:.7;
+  }
+
+  /* Botones */
+  .btn{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .2s ease;
+    letter-spacing:.5px;
+  }
+  .btn:active{transform:scale(.98)}
+  .btn-primary{
+    background:var(--orange);
+    color:#fff;
+    box-shadow:0 6px 18px rgba(253,106,24,.35);
+  }
+  .btn-primary:hover{background:var(--orange-dark)}
+  .btn-ghost{
+    background:transparent;
+    color:var(--navy);
+    border:1.5px solid var(--lavender);
+  }
+  .btn-dark{
+    background:var(--navy);
+    color:#fff;
+  }
+
+  /* Bottom nav (decorativo) */
+  .bottom-nav{
+    position:absolute;
+    left:0;right:0;bottom:0;
+    background:#fff;
+    border-top:1px solid var(--lavender);
+    display:flex;
+    justify-content:space-around;
+    padding:12px 0 18px;
+  }
+  .nav-item{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-size:10px;
+    color:var(--periwinkle);
+    cursor:pointer;
+  }
+  .nav-item.active{color:var(--orange)}
+  .nav-icon{
+    width:22px;height:22px;
+    display:grid;place-items:center;
+  }
+  .nav-icon svg{width:22px;height:22px}
+
+  /* ================== PAGO ================== */
+  .topbar{
+    padding:18px 24px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:1px solid var(--lavender);
+    flex-shrink:0;
+  }
+  .back-btn{
+    width:36px;height:36px;
+    border-radius:50%;
+    background:var(--cream);
+    border:none;
+    display:grid;place-items:center;
+    cursor:pointer;
+  }
+  .back-btn:hover{background:var(--lavender)}
+  .topbar h2{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:22px;
+    letter-spacing:1px;
+  }
+
+  .pay-body{
+    padding:24px;
+    flex:1;
+  }
+  .resumen{
+    background:var(--cream);
+    border-radius:16px;
+    padding:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:24px;
+  }
+  .resumen-info p{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy-2);opacity:.6}
+  .resumen-info h3{font-family:'Bebas Neue',sans-serif;font-size:24px;margin-top:2px}
+  .resumen-monto{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:28px;
+    color:var(--orange);
+  }
+  .resumen-monto small{font-size:12px;color:var(--navy-2);opacity:.7;display:block;text-align:right}
+
+  /* Banner multi-banco — enfatiza compatibilidad universal */
+  .multi-bank-banner{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:linear-gradient(135deg, var(--teal) 0%, #2bb8d8 100%);
+    color:#fff;
+    padding:12px 14px;
+    border-radius:12px;
+    margin-bottom:14px;
+    box-shadow:0 6px 16px rgba(30,162,193,.25);
+    position:relative;
+    overflow:hidden;
+  }
+  .multi-bank-banner::before{
+    content:'';
+    position:absolute;
+    top:-20px;right:-20px;
+    width:80px;height:80px;
+    background:radial-gradient(circle, rgba(255,255,255,.2), transparent 70%);
+    border-radius:50%;
+  }
+  .multi-bank-banner .icon-shield{
+    width:36px;height:36px;
+    background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.3);
+    border-radius:10px;
+    display:grid;place-items:center;
+    flex-shrink:0;
+    position:relative;z-index:1;
+  }
+  .multi-bank-banner .text{
+    flex:1;
+    line-height:1.3;
+    position:relative;z-index:1;
+  }
+  .multi-bank-banner .text .top{
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.3px;
+  }
+  .multi-bank-banner .text .sub{
+    font-size:11px;
+    opacity:.9;
+    margin-top:2px;
+  }
+
+  /* Carrusel de logos de bancos */
+  .bank-logos-row{
+    display:flex;
+    gap:6px;
+    margin-bottom:18px;
+    overflow-x:auto;
+    padding-bottom:4px;
+  }
+  .bank-logos-row::-webkit-scrollbar{display:none}
+  .bank-chip{
+    flex-shrink:0;
+    background:#fff;
+    border:1px solid var(--lavender);
+    padding:5px 10px;
+    border-radius:14px;
+    font-size:10px;
+    font-weight:600;
+    color:var(--navy);
+    letter-spacing:.3px;
+    white-space:nowrap;
+  }
+  .bank-chip.featured{
+    background:var(--navy);
+    color:#fff;
+    border-color:var(--navy);
+  }
+
+  /* Tarjeta visual */
+  .card-visual{
+    aspect-ratio: 1.586;
+    background:linear-gradient(135deg, var(--navy) 0%, var(--periwinkle) 100%);
+    border-radius:18px;
+    padding:22px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:24px;
+    box-shadow:var(--shadow-md);
+  }
+  .card-visual::before{
+    content:'';
+    position:absolute;
+    top:-50%;right:-30%;
+    width:300px;height:300px;
+    background:radial-gradient(circle, rgba(253,106,24,.35), transparent 60%);
+    border-radius:50%;
+  }
+  .card-top{
+    display:flex;justify-content:space-between;
+    position:relative;z-index:1;
+  }
+  .card-chip{
+    width:38px;height:28px;
+    background:linear-gradient(135deg, #E2C293, #b8985f);
+    border-radius:5px;
+    position:relative;
+  }
+  .card-chip::after{
+    content:'';
+    position:absolute;inset:4px;
+    border:1px solid rgba(0,0,0,.2);
+    border-radius:3px;
+  }
+  .card-bank{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:14px;
+    letter-spacing:1.5px;
+    opacity:.9;
+  }
+  .card-number{
+    font-family:'Inter',monospace;
+    font-size:18px;
+    letter-spacing:2px;
+    margin-top:32px;
+    position:relative;z-index:1;
+    font-feature-settings:"tnum";
+  }
+  .card-bottom{
+    display:flex;
+    justify-content:space-between;
+    margin-top:18px;
+    position:relative;z-index:1;
+  }
+  .card-bottom .label{font-size:8px;letter-spacing:1.5px;opacity:.6;text-transform:uppercase}
+  .card-bottom .val{font-size:12px;letter-spacing:1px;margin-top:2px;font-weight:600}
+
+  /* Form */
+  .form-group{margin-bottom:16px}
+  .form-group label{
+    display:block;
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--navy-2);
+    opacity:.7;
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .input-wrap{position:relative}
+  .form-group input, .form-group select{
+    width:100%;
+    padding:14px 14px;
+    border:1.5px solid var(--lavender);
+    border-radius:12px;
+    font-family:inherit;
+    font-size:15px;
+    color:var(--navy);
+    background:#fff;
+    transition:border-color .2s, box-shadow .2s;
+    outline:none;
+  }
+  .form-group input:focus, .form-group select:focus{
+    border-color:var(--orange);
+    box-shadow:0 0 0 3px rgba(253,106,24,.15);
+  }
+  .input-wrap .icon{
+    position:absolute;
+    right:14px;top:50%;transform:translateY(-50%);
+    pointer-events:none;
+  }
+  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  .bank-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#e8f4f7;
+    color:var(--teal);
+    padding:6px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:600;
+    margin-top:8px;
+  }
+  .bank-pill::before{
+    content:'';
+    width:6px;height:6px;
+    background:var(--teal);
+    border-radius:50%;
+  }
+
+  .info-recurrente{
+    background:rgba(30,162,193,.08);
+    border-left:3px solid var(--teal);
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:12px;
+    line-height:1.5;
+    color:var(--navy-2);
+    margin-bottom:20px;
+  }
+  .info-recurrente strong{color:var(--navy)}
+
+  .pay-footer{
+    padding:16px 24px 20px;
+    border-top:1px solid var(--lavender);
+    background:#fff;
+    flex-shrink:0;
+  }
+
+  /* ================== ÉXITO ================== */
+  #screen-success{
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;
+    align-items:center;
+    justify-content:flex-start;
+    padding:48px 28px 32px;
+    position:relative;
+  }
+  #screen-success::before{
+    content:'';
+    position:absolute;
+    top:-100px;left:50%;
+    transform:translateX(-50%);
+    width:500px;height:500px;
+    background:radial-gradient(circle, rgba(253,106,24,.25), transparent 60%);
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .success-content{
+    text-align:center;
+    position:relative;z-index:1;
+    max-width:320px;
+    width:100%;
+  }
+  .check-circle{
+    width:88px;height:88px;
+    margin:12px auto 24px;
+    border-radius:50%;
+    background:var(--orange);
+    display:grid;place-items:center;
+    box-shadow:0 0 0 10px rgba(253,106,24,.18), 0 0 0 20px rgba(253,106,24,.08);
+    animation:pop .5s cubic-bezier(.2,1.5,.4,1) backwards;
+  }
+  @keyframes pop{
+    from{opacity:0;transform:scale(.4)}
+    to{opacity:1;transform:scale(1)}
+  }
+  .check-circle svg{width:48px;height:48px;animation:draw .6s .2s backwards}
+  @keyframes draw{
+    from{stroke-dashoffset:60}
+    to{stroke-dashoffset:0}
+  }
+  .success-title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:38px;
+    letter-spacing:1px;
+    line-height:1;
+    margin-bottom:10px;
+    animation:fadeUp .5s .25s backwards;
+  }
+  .success-title em{color:var(--orange);font-style:normal}
+  .success-msg{
+    font-size:14px;
+    line-height:1.6;
+    opacity:.85;
+    margin-bottom:24px;
+    animation:fadeUp .5s .35s backwards;
+  }
+  .recurrence-card{
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:20px;
+    text-align:left;
+    animation:fadeUp .5s .45s backwards;
+  }
+  .recurrence-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0;
+    font-size:13px;
+  }
+  .recurrence-row + .recurrence-row{border-top:1px solid rgba(255,255,255,.08)}
+  .recurrence-row .k{opacity:.6;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+  .recurrence-row .v{font-weight:600}
+  .recurrence-row .v.accent{color:var(--orange)}
+
+  .success-actions{
+    display:flex;flex-direction:column;gap:10px;
+    animation:fadeUp .5s .55s backwards;
+  }
+
+  /* ================== BIENVENIDA ================== */
+  #screen-welcome{
+    background:
+      radial-gradient(ellipse at top, rgba(253,106,24,.15), transparent 60%),
+      linear-gradient(180deg, #fff 0%, var(--cream) 100%);
+    color:var(--navy);
+    align-items:center;
+    justify-content:center;
+    padding:32px 28px;
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+  }
+  /* Anillos decorativos pulsantes */
+  .welcome-rings{
+    position:absolute;
+    top:80px;left:50%;
+    transform:translateX(-50%);
+    pointer-events:none;
+  }
+  .welcome-rings span{
+    position:absolute;
+    top:0;left:0;
+    width:160px;height:160px;
+    border-radius:50%;
+    border:1.5px solid var(--orange);
+    transform:translate(-50%,-50%);
+    opacity:0;
+    animation:pulseRing 3s ease-out infinite;
+  }
+  .welcome-rings span:nth-child(2){animation-delay:1s}
+  .welcome-rings span:nth-child(3){animation-delay:2s}
+  @keyframes pulseRing{
+    0%{transform:translate(-50%,-50%) scale(.4);opacity:.7}
+    100%{transform:translate(-50%,-50%) scale(2.2);opacity:0}
+  }
+
+  .welcome-content{
+    position:relative;z-index:1;
+    max-width:340px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .welcome-icon{
+    width:110px;height:110px;
+    border-radius:28px;
+    background:linear-gradient(135deg, var(--orange) 0%, #ff8a3d 100%);
+    display:grid;place-items:center;
+    margin-bottom:28px;
+    box-shadow:0 20px 40px rgba(253,106,24,.35);
+    animation:bounceIn .7s cubic-bezier(.2,1.4,.4,1) backwards;
+    position:relative;
+  }
+  .welcome-icon::after{
+    content:'';
+    position:absolute;
+    inset:-3px;
+    border-radius:30px;
+    background:linear-gradient(135deg, rgba(253,106,24,.4), transparent);
+    z-index:-1;
+    filter:blur(12px);
+  }
+  .welcome-icon svg{width:60px;height:60px}
+  @keyframes bounceIn{
+    0%{opacity:0;transform:scale(.3) rotate(-15deg)}
+    60%{transform:scale(1.05) rotate(3deg)}
+    100%{opacity:1;transform:scale(1) rotate(0)}
+  }
+
+  .welcome-greeting{
+    font-size:13px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color:var(--orange);
+    font-weight:700;
+    margin-bottom:8px;
+    animation:fadeUp .5s .25s backwards;
+  }
+  .welcome-title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:48px;
+    line-height:.95;
+    letter-spacing:1px;
+    margin-bottom:18px;
+    animation:fadeUp .5s .35s backwards;
+  }
+  .welcome-title em{
+    color:var(--orange);
+    font-style:normal;
+    display:block;
+  }
+  .welcome-msg{
+    font-size:15px;
+    line-height:1.6;
+    color:var(--navy-2);
+    opacity:.85;
+    margin-bottom:28px;
+    animation:fadeUp .5s .45s backwards;
+  }
+  .welcome-msg strong{color:var(--navy);font-weight:700}
+
+  .welcome-perks{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:28px;
+    animation:fadeUp .5s .55s backwards;
+  }
+  .perk{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:#fff;
+    border:1px solid var(--lavender);
+    padding:14px 16px;
+    border-radius:14px;
+    text-align:left;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .perk:hover{
+    transform:translateX(4px);
+    box-shadow:var(--shadow-sm);
+    border-color:var(--orange);
+  }
+  .perk-ico{
+    width:38px;height:38px;
+    border-radius:10px;
+    background:var(--cream);
+    display:grid;place-items:center;
+    flex-shrink:0;
+    color:var(--orange);
+  }
+  .perk-text{flex:1}
+  .perk-text .t{font-weight:700;font-size:13px;color:var(--navy)}
+  .perk-text .s{font-size:11px;color:var(--navy-2);opacity:.65;margin-top:1px}
+
+  .welcome-cta{
+    width:100%;
+    animation:fadeUp .5s .65s backwards;
+  }
+
+  /* Footer "Powered by Cordpex" */
+  .powered{
+    text-align:center;
+    margin-top:18px;
+    font-size:10px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--periwinkle);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    opacity:.85;
+  }
+  .powered.on-dark{color:rgba(255,255,255,.5)}
+  .powered svg{height:14px;width:auto}
+  .powered .label{opacity:.7}
+  .powered .brand{color:var(--navy);font-weight:700;letter-spacing:1px}
+  .powered.on-dark .brand{color:#fff}
+
+  /* Confeti decorativo */
+  .confetti{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .confetti span{
+    position:absolute;
+    width:8px;height:8px;
+    border-radius:1px;
+    animation: fall 2.5s linear infinite;
+    opacity:.85;
+  }
+  @keyframes fall{
+    0%{transform:translateY(-50px) rotate(0)}
+    100%{transform:translateY(900px) rotate(720deg)}
+  }
+
+  /* ================== BOTÓN EN ESTADO LOADING ================== */
+  .btn[disabled]{
+    opacity:.85;
+    cursor:wait;
+  }
+  .btn-spinner{
+    display:inline-block;
+    width:16px;height:16px;
+    border:2px solid rgba(255,255,255,.35);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+    margin-right:8px;
+    vertical-align:-3px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ================== PANTALLA DE PROCESAMIENTO ================== */
+  #screen-processing{
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;
+    align-items:center;
+    justify-content:center;
+    padding:32px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  #screen-processing::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(253,106,24,.18), transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(30,162,193,.15), transparent 50%);
+    pointer-events:none;
+  }
+  .processing-content{
+    position:relative;z-index:1;
+    max-width:300px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .processing-orb{
+    width:120px;height:120px;
+    border-radius:50%;
+    margin-bottom:32px;
+    position:relative;
+    background:radial-gradient(circle at 30% 30%, rgba(253,106,24,.4), transparent 70%);
+  }
+  .processing-orb::before,
+  .processing-orb::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    border:2px solid transparent;
+    border-top-color:var(--orange);
+    animation:spin 1.2s linear infinite;
+  }
+  .processing-orb::after{
+    inset:14px;
+    border-top-color:var(--teal);
+    animation:spin 1.6s linear infinite reverse;
+  }
+  .processing-orb .lock{
+    position:absolute;
+    inset:0;
+    display:grid;place-items:center;
+    color:rgba(255,255,255,.85);
+    animation:fadeUp .4s backwards;
+  }
+  .processing-title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:32px;
+    letter-spacing:1px;
+    margin-bottom:12px;
+  }
+  .processing-step{
+    font-size:14px;
+    opacity:.75;
+    min-height:22px;
+    transition:opacity .2s;
+  }
+  .processing-secure{
+    margin-top:32px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    opacity:.55;
+  }
+
+  /* ================== RESUMEN OPERACIÓN (success enriquecido) ================== */
+  .operation-summary{
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);
+    border-radius:18px;
+    padding:4px 0;
+    margin-bottom:20px;
+    text-align:left;
+    overflow:hidden;
+    animation:fadeUp .5s .45s backwards;
+  }
+  .summary-section{
+    padding:14px 18px;
+  }
+  .summary-section + .summary-section{
+    border-top:1px dashed rgba(255,255,255,.12);
+  }
+  .summary-section h4{
+    font-size:10px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--orange);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  .summary-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6px 0;
+    font-size:13px;
+    gap:12px;
+  }
+  .summary-row .k{
+    opacity:.65;
+    font-size:12px;
+  }
+  .summary-row .v{
+    font-weight:600;
+    text-align:right;
+  }
+  .summary-row .v.accent{color:var(--orange)}
+  .ref-code{
+    font-family:'Inter',monospace;
+    font-size:11px;
+    letter-spacing:1px;
+    background:rgba(0,0,0,.25);
+    padding:3px 8px;
+    border-radius:6px;
+  }
+
+  /* ================== PERFIL ================== */
+  .profile-header{
+    background:linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 60%, var(--periwinkle) 130%);
+    color:#fff;
+    padding:24px 24px 56px;
+    position:relative;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .profile-header::before{
+    content:'';
+    position:absolute;
+    top:-80px;right:-80px;
+    width:240px;height:240px;
+    background:radial-gradient(circle, rgba(253,106,24,.3), transparent 65%);
+    border-radius:50%;
+  }
+  .profile-topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    position:relative;z-index:1;
+  }
+  .profile-topbar h2{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:22px;
+    letter-spacing:1.5px;
+  }
+  .icon-btn{
+    width:36px;height:36px;
+    border-radius:50%;
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.15);
+    display:grid;place-items:center;
+    cursor:pointer;
+    color:#fff;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,.18)}
+
+  .avatar-block{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    position:relative;z-index:1;
+  }
+  .avatar{
+    width:64px;height:64px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--orange), #ff8a3d);
+    display:grid;place-items:center;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:26px;
+    color:#fff;
+    box-shadow:0 8px 20px rgba(253,106,24,.4);
+    border:3px solid rgba(255,255,255,.2);
+  }
+  .avatar-info .name{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:24px;
+    letter-spacing:1px;
+    line-height:1;
+  }
+  .avatar-info .meta{
+    font-size:12px;
+    opacity:.7;
+    margin-top:4px;
+  }
+  .member-since{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:rgba(253,106,24,.18);
+    border:1px solid rgba(253,106,24,.4);
+    color:var(--orange);
+    padding:3px 9px;
+    border-radius:20px;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-top:6px;
+  }
+
+  .profile-body{
+    flex:1;
+    overflow-y:auto;
+    padding:0 20px 24px;
+    margin-top:-32px;
+    position:relative;
+    z-index:2;
+  }
+
+  .subscription-card{
+    background:#fff;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 12px 40px rgba(14,30,53,.12);
+    margin-bottom:20px;
+    border:1px solid var(--lavender);
+  }
+  .sub-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:16px;
+  }
+  .sub-head .plan-info .label{
+    font-size:10px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--periwinkle);
+    font-weight:700;
+  }
+  .sub-head .plan-info .name{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:26px;
+    letter-spacing:1px;
+    margin-top:2px;
+  }
+  .status-active{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#e6f7ed;
+    color:#0f8a3a;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.5px;
+  }
+  .status-active::before{
+    content:'';
+    width:7px;height:7px;
+    border-radius:50%;
+    background:#0f8a3a;
+    box-shadow:0 0 0 3px rgba(15,138,58,.18);
+    animation:pulse-dot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{
+    0%,100%{box-shadow:0 0 0 3px rgba(15,138,58,.18)}
+    50%{box-shadow:0 0 0 6px rgba(15,138,58,.05)}
+  }
+
+  .billing-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .billing-cell{
+    background:var(--cream);
+    border-radius:12px;
+    padding:12px;
+  }
+  .billing-cell .lbl{
+    font-size:9px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--navy-2);
+    opacity:.6;
+    font-weight:700;
+  }
+  .billing-cell .val{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:18px;
+    margin-top:3px;
+    color:var(--navy);
+    letter-spacing:.5px;
+  }
+  .billing-cell.amount{
+    background:var(--navy);
+    color:#fff;
+    grid-column:span 2;
+  }
+  .billing-cell.amount .lbl{color:rgba(255,255,255,.6)}
+  .billing-cell.amount .val{
+    color:var(--orange);
+    font-size:26px;
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+  }
+  .billing-cell.amount .val small{
+    font-family:'Inter',sans-serif;
+    font-size:11px;
+    color:rgba(255,255,255,.6);
+    font-weight:500;
+    letter-spacing:.5px;
+  }
+
+  .payment-method{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px;
+    background:var(--bg);
+    border-radius:12px;
+    margin-bottom:16px;
+  }
+  .pm-logo{
+    width:42px;height:28px;
+    background:linear-gradient(135deg, var(--navy), var(--periwinkle));
+    border-radius:5px;
+    display:grid;place-items:center;
+    color:#fff;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:11px;
+    letter-spacing:1px;
+    flex-shrink:0;
+  }
+  .pm-info{flex:1}
+  .pm-info .pm-num{
+    font-size:13px;
+    font-weight:600;
+    font-family:'Inter',monospace;
+    letter-spacing:1px;
+  }
+  .pm-info .pm-bank{
+    font-size:11px;
+    color:var(--navy-2);
+    opacity:.65;
+    margin-top:1px;
+  }
+
+  .sub-actions{
+    display:flex;
+    gap:8px;
+  }
+  .btn-mini{
+    flex:1;
+    padding:10px;
+    border:1px solid var(--lavender);
+    background:#fff;
+    border-radius:10px;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:600;
+    color:var(--navy);
+    cursor:pointer;
+    transition:all .2s;
+  }
+  .btn-mini:hover{
+    border-color:var(--orange);
+    color:var(--orange);
+  }
+  .btn-mini.danger:hover{
+    border-color:#e53935;
+    color:#e53935;
+  }
+
+  /* Próximo cargo highlight card */
+  .next-charge-card{
+    background:linear-gradient(135deg, var(--orange) 0%, #ff8a3d 100%);
+    color:#fff;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:20px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    box-shadow:0 10px 28px rgba(253,106,24,.3);
+    position:relative;
+    overflow:hidden;
+  }
+  .next-charge-card::before{
+    content:'';
+    position:absolute;
+    top:-30px;right:-30px;
+    width:120px;height:120px;
+    background:radial-gradient(circle, rgba(255,255,255,.2), transparent 70%);
+    border-radius:50%;
+  }
+  .calendar-icon{
+    width:54px;height:54px;
+    background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.3);
+    border-radius:14px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    flex-shrink:0;
+    position:relative;z-index:1;
+  }
+  .calendar-icon .month{
+    font-size:8px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    font-weight:700;
+    opacity:.85;
+  }
+  .calendar-icon .day{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:24px;
+    line-height:.9;
+  }
+  .next-charge-text{
+    flex:1;
+    position:relative;z-index:1;
+  }
+  .next-charge-text .label{
+    font-size:10px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    opacity:.85;
+    font-weight:700;
+  }
+  .next-charge-text .when{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:18px;
+    margin-top:2px;
+    letter-spacing:.5px;
+  }
+  .next-charge-text .amt{
+    font-size:12px;
+    opacity:.9;
+    margin-top:2px;
+  }
+
+  .history-list{
+    background:#fff;
+    border-radius:16px;
+    border:1px solid var(--lavender);
+    overflow:hidden;
+  }
+  .history-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 16px;
+  }
+  .history-item + .history-item{
+    border-top:1px solid var(--lavender);
+  }
+  .hist-dot{
+    width:10px;height:10px;
+    border-radius:50%;
+    background:#0f8a3a;
+    flex-shrink:0;
+  }
+  .hist-info{flex:1}
+  .hist-info .t{font-size:13px;font-weight:600;color:var(--navy)}
+  .hist-info .d{font-size:11px;color:var(--navy-2);opacity:.6;margin-top:1px}
+  .hist-amt{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:16px;
+    color:var(--navy);
+    letter-spacing:.5px;
+  }
+
+  /* ================== CHAT FLOTANTE (FAB + MODAL) ================== */
+  .chat-fab{
+    position:absolute;
+    bottom:20px;
+    right:20px;
+    z-index:40;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:linear-gradient(135deg, var(--navy) 0%, var(--periwinkle) 200%);
+    color:#fff;
+    border:none;
+    padding:12px 16px 12px 14px;
+    border-radius:30px;
+    cursor:pointer;
+    box-shadow:0 12px 28px rgba(14,30,53,.35), 0 0 0 4px rgba(253,106,24,.0);
+    font-family:inherit;
+    font-weight:600;
+    font-size:13px;
+    animation:fab-in .5s .6s cubic-bezier(.2,1.4,.4,1) backwards, fab-pulse 3s 1.5s ease-in-out infinite;
+    transition:transform .2s ease;
+  }
+  .chat-fab:hover{transform:translateY(-2px) scale(1.02)}
+  .chat-fab:active{transform:scale(.96)}
+  @keyframes fab-in{
+    from{opacity:0;transform:translateY(20px) scale(.6)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+  }
+  @keyframes fab-pulse{
+    0%,100%{box-shadow:0 12px 28px rgba(14,30,53,.35), 0 0 0 0 rgba(253,106,24,.5)}
+    50%{box-shadow:0 12px 28px rgba(14,30,53,.35), 0 0 0 12px rgba(253,106,24,0)}
+  }
+  .chat-fab-icon{
+    width:32px;height:32px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--orange), #ff8a3d);
+    display:grid;place-items:center;
+    flex-shrink:0;
+    position:relative;
+  }
+  .chat-fab-icon::after{
+    content:'';
+    position:absolute;
+    top:-2px;right:-2px;
+    width:10px;height:10px;
+    background:#0f8a3a;
+    border-radius:50%;
+    border:2px solid var(--navy);
+  }
+  .chat-fab-text{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    line-height:1.15;
+  }
+  .chat-fab-text .top{
+    font-size:11px;
+    opacity:.7;
+    letter-spacing:.5px;
+  }
+  .chat-fab-text .bot{
+    font-size:13px;
+    font-weight:700;
+  }
+
+  /* Modal del chat */
+  .chat-overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(14,30,53,.55);
+    backdrop-filter:blur(4px);
+    z-index:60;
+    display:none;
+    align-items:flex-end;
+    animation:overlay-in .25s ease;
+  }
+  .chat-overlay.open{display:flex}
+  @keyframes overlay-in{
+    from{opacity:0}
+    to{opacity:1}
+  }
+  .chat-panel{
+    width:100%;
+    height:85%;
+    background:#fff;
+    border-radius:24px 24px 0 0;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    animation:chat-up .35s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes chat-up{
+    from{transform:translateY(100%)}
+    to{transform:translateY(0)}
+  }
+
+  .chat-header{
+    padding:14px 18px;
+    background:linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-shrink:0;
+  }
+  .chat-header .grabber{
+    position:absolute;
+    top:6px;left:50%;
+    transform:translateX(-50%);
+    width:36px;height:4px;
+    background:rgba(255,255,255,.3);
+    border-radius:2px;
+  }
+  .chat-avatar{
+    width:38px;height:38px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--orange), #ff8a3d);
+    display:grid;place-items:center;
+    flex-shrink:0;
+    position:relative;
+  }
+  .chat-avatar::after{
+    content:'';
+    position:absolute;
+    bottom:0;right:0;
+    width:10px;height:10px;
+    background:#0f8a3a;
+    border-radius:50%;
+    border:2px solid var(--navy);
+  }
+  .chat-title{flex:1;line-height:1.2}
+  .chat-title .n{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:17px;
+    letter-spacing:1px;
+  }
+  .chat-title .s{
+    font-size:11px;
+    opacity:.7;
+  }
+  .chat-close{
+    width:32px;height:32px;
+    border-radius:50%;
+    background:rgba(255,255,255,.1);
+    border:none;
+    display:grid;place-items:center;
+    color:#fff;
+    cursor:pointer;
+  }
+  .chat-close:hover{background:rgba(255,255,255,.2)}
+
+  .chat-messages{
+    flex:1;
+    overflow-y:auto;
+    padding:18px;
+    background:var(--bg);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .msg{
+    max-width:85%;
+    padding:10px 14px;
+    border-radius:16px;
+    font-size:13.5px;
+    line-height:1.5;
+    animation:msg-in .3s ease;
+  }
+  @keyframes msg-in{
+    from{opacity:0;transform:translateY(8px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .msg.bot{
+    align-self:flex-start;
+    background:#fff;
+    color:var(--navy);
+    border-bottom-left-radius:4px;
+    border:1px solid var(--lavender);
+  }
+  .msg.user{
+    align-self:flex-end;
+    background:var(--orange);
+    color:#fff;
+    border-bottom-right-radius:4px;
+  }
+
+  .msg-card{
+    background:#fff;
+    border:1px solid var(--lavender);
+    border-radius:14px;
+    padding:14px;
+    margin-top:6px;
+    font-size:13px;
+    color:var(--navy);
+  }
+  .msg-card .r{
+    display:flex;
+    justify-content:space-between;
+    padding:5px 0;
+  }
+  .msg-card .r + .r{border-top:1px dashed var(--lavender)}
+  .msg-card .r .k{
+    color:var(--navy-2);
+    opacity:.7;
+    font-size:12px;
+  }
+  .msg-card .r .v{
+    font-weight:600;
+    text-align:right;
+  }
+  .msg-card .r .v.accent{color:var(--orange)}
+
+  /* Indicador de "escribiendo" */
+  .typing{
+    align-self:flex-start;
+    background:#fff;
+    border:1px solid var(--lavender);
+    padding:10px 14px;
+    border-radius:16px;
+    border-bottom-left-radius:4px;
+    display:inline-flex;
+    gap:4px;
+  }
+  .typing span{
+    width:7px;height:7px;
+    border-radius:50%;
+    background:var(--periwinkle);
+    animation:bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2){animation-delay:.15s}
+  .typing span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{
+    0%,60%,100%{transform:translateY(0);opacity:.4}
+    30%{transform:translateY(-5px);opacity:1}
+  }
+
+  /* Sugerencias rápidas */
+  .quick-replies{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding:10px 18px 0;
+    background:var(--bg);
+    flex-shrink:0;
+  }
+  .quick-reply{
+    background:#fff;
+    border:1px solid var(--lavender);
+    color:var(--navy);
+    padding:7px 12px;
+    border-radius:18px;
+    font-size:12px;
+    font-family:inherit;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s;
+  }
+  .quick-reply:hover{
+    border-color:var(--orange);
+    color:var(--orange);
+    background:#fff5ee;
+  }
+
+  .chat-input-area{
+    padding:12px 14px 16px;
+    background:#fff;
+    border-top:1px solid var(--lavender);
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-shrink:0;
+  }
+  .chat-input{
+    flex:1;
+    border:1.5px solid var(--lavender);
+    background:var(--bg);
+    border-radius:22px;
+    padding:11px 16px;
+    font-family:inherit;
+    font-size:14px;
+    color:var(--navy);
+    outline:none;
+    transition:border-color .15s;
+  }
+  .chat-input:focus{
+    border-color:var(--orange);
+    background:#fff;
+  }
+  .chat-send{
+    width:42px;height:42px;
+    border:none;
+    border-radius:50%;
+    background:var(--orange);
+    color:#fff;
+    cursor:pointer;
+    display:grid;place-items:center;
+    transition:transform .15s, background .15s;
+    flex-shrink:0;
+  }
+  .chat-send:hover{background:var(--orange-dark)}
+  .chat-send:active{transform:scale(.92)}
+  .chat-send:disabled{
+    background:var(--lavender);
+    cursor:not-allowed;
+  }
+
+  .chat-powered{
+    text-align:center;
+    font-size:9px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--periwinkle);
+    padding:6px 0 4px;
+    background:#fff;
+    flex-shrink:0;
+  }
+  .chat-powered b{color:var(--navy);font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>●●●●● 100%</span>
+    </div>
+
+    <!-- ============ SCREEN 1: HOME / MEMBRESÍA ============ -->
+    <section class="screen active" id="screen-home">
+      <div class="hero">
+        <div class="gym-brand">
+          <div class="gym-logo">IP</div>
+          <div>
+            <div class="gym-name">IronPulse Gym</div>
+            <div class="gym-tag">Caracas · Las Mercedes</div>
+          </div>
+        </div>
+        <div>
+          <div class="hero-title">Activa tu<br><em>membresía</em></div>
+          <div class="hero-sub">Entrenamiento sin interrupciones</div>
+        </div>
+      </div>
+
+      <div class="home-body">
+        <div class="quick-stats">
+          <div class="stat"><div class="v">24/7</div><div class="l">Acceso</div></div>
+          <div class="stat"><div class="v">+40</div><div class="l">Clases</div></div>
+          <div class="stat"><div class="v">3</div><div class="l">Sedes</div></div>
+        </div>
+
+        <div class="section-label">Plan recomendado</div>
+
+        <div class="plan-card">
+          <span class="plan-badge">Más popular</span>
+          <div class="plan-name">Plan Élite</div>
+          <div class="plan-price">
+            <span class="num">$35</span>
+            <span class="per">/ mes</span>
+          </div>
+          <ul class="plan-features">
+            <li>Acceso a las 3 sedes</li>
+            <li>Clases grupales ilimitadas</li>
+            <li>1 sesión mensual con coach</li>
+            <li>Sin contrato de permanencia</li>
+          </ul>
+        </div>
+
+        <button class="btn btn-primary" onclick="go('screen-pay')">
+          Suscribirme con débito recurrente
+        </button>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item active" onclick="go('screen-home')">
+          <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9v9a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/></svg></div>
+          Inicio
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          Clases
+        </div>
+        <div class="nav-item" onclick="go('screen-pay')">
+          <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+          Pagos
+        </div>
+        <div class="nav-item" onclick="goPerfil()">
+          <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg></div>
+          Perfil
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 2: PAGO ============ -->
+    <section class="screen" id="screen-pay">
+      <div class="topbar">
+        <button class="back-btn" onclick="go('screen-home')" aria-label="Volver">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E1E35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h2>Datos de pago</h2>
+      </div>
+
+      <div class="pay-body">
+        <div class="resumen">
+          <div class="resumen-info">
+            <p>Plan</p>
+            <h3>Élite mensual</h3>
+          </div>
+          <div class="resumen-monto">
+            $35.00
+            <small>USD / mes</small>
+          </div>
+        </div>
+
+        <!-- Banner multi-banco -->
+        <div class="multi-bank-banner">
+          <div class="icon-shield">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L4 7v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V7l-8-5z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="text">
+            <div class="top">Compatible con cualquier banco nacional</div>
+            <div class="sub">Acepta tarjetas de débito y crédito de todos los bancos venezolanos</div>
+          </div>
+        </div>
+
+        <!-- Chips de bancos compatibles -->
+        <div class="bank-logos-row">
+          <div class="bank-chip featured">Banplus</div>
+          <div class="bank-chip">Banesco</div>
+          <div class="bank-chip">Mercantil</div>
+          <div class="bank-chip">BdV</div>
+          <div class="bank-chip">Provincial</div>
+          <div class="bank-chip">BNC</div>
+          <div class="bank-chip">Bicentenario</div>
+          <div class="bank-chip">Exterior</div>
+          <div class="bank-chip">+ todos</div>
+        </div>
+
+        <!-- Tarjeta visual en vivo -->
+        <div class="card-visual">
+          <div class="card-top">
+            <div class="card-chip"></div>
+            <div class="card-bank" id="card-bank-name">VISA</div>
+          </div>
+          <div class="card-number" id="card-num">•••• •••• •••• ••••</div>
+          <div class="card-bottom">
+            <div>
+              <div class="label">Titular</div>
+              <div class="val" id="card-holder">NOMBRE APELLIDO</div>
+            </div>
+            <div>
+              <div class="label">Vence</div>
+              <div class="val" id="card-exp">MM/AA</div>
+            </div>
+          </div>
+        </div>
+
+        <form id="pay-form" onsubmit="submitPay(event)" autocomplete="off">
+          <div class="form-group">
+            <label>Banco emisor</label>
+            <select id="banco" required>
+              <option value="">Selecciona tu banco</option>
+              <option>Banplus</option>
+              <option>Banesco</option>
+              <option>Banco Mercantil</option>
+              <option>Banco de Venezuela</option>
+              <option>BBVA Provincial</option>
+              <option>Banco Nacional de Crédito</option>
+              <option>Banco Bicentenario</option>
+              <option>Banco Exterior</option>
+              <option>Banco del Tesoro</option>
+              <option>Banco Activo</option>
+              <option>Banco Caroní</option>
+              <option>Banco Plaza</option>
+              <option>Banco Sofitasa</option>
+              <option>Bancrecer</option>
+              <option>BFC Banco Fondo Común</option>
+              <option>Otro banco nacional</option>
+            </select>
+            <span class="bank-pill">Compatible con todos los bancos nacionales</span>
+          </div>
+
+          <div class="form-group">
+            <label>Número de tarjeta</label>
+            <div class="input-wrap">
+              <input id="numero" type="text" inputmode="numeric" maxlength="19"
+                placeholder="1234 5678 9012 3456" oninput="formatCard(this)" required />
+              <span class="icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7181B5" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Titular</label>
+            <input id="titular" type="text" placeholder="Nombre como aparece en la tarjeta"
+              oninput="document.getElementById('card-holder').textContent = this.value.toUpperCase() || 'NOMBRE APELLIDO'" required />
+          </div>
+
+          <div class="row-2">
+            <div class="form-group">
+              <label>Vencimiento</label>
+              <input id="venc" type="text" inputmode="numeric" maxlength="5"
+                placeholder="MM/AA" oninput="formatExp(this)" required />
+            </div>
+            <div class="form-group">
+              <label>CVV</label>
+              <input id="cvv" type="password" inputmode="numeric" maxlength="4"
+                placeholder="•••" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Cédula del titular</label>
+            <input id="cedula" type="text" inputmode="numeric" placeholder="V-12345678" required />
+          </div>
+
+          <div class="info-recurrente">
+            <strong>Pago recurrente automático.</strong> Al continuar autorizas a IronPulse Gym a debitar
+            <strong>$35.00 USD</strong> de esta tarjeta cada mes en la fecha de afiliación.
+            Puedes cancelar cuando quieras desde la app.
+          </div>
+        </form>
+      </div>
+
+      <div class="pay-footer">
+        <button type="button" class="btn btn-primary" onclick="submitPay(event)">
+          Adherir tarjeta y suscribirme
+        </button>
+        <div class="powered">
+          <span class="label">Procesado por</span>
+          <span class="brand">CORDPEX</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 3: ÉXITO ============ -->
+    <!-- ============ SCREEN 2.5: PROCESANDO ============ -->
+    <section class="screen" id="screen-processing">
+      <div class="processing-content">
+        <div class="processing-orb">
+          <div class="lock">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+        </div>
+        <h2 class="processing-title">Procesando tu pago</h2>
+        <p class="processing-step" id="processing-step">Validando datos de tarjeta…</p>
+
+        <div class="processing-secure">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L4 7v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V7l-8-5z"/></svg>
+          Conexión segura · 256-bit
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 3: ÉXITO ============ -->
+    <section class="screen" id="screen-success">
+      <div class="confetti" id="confetti"></div>
+
+      <div class="success-content">
+        <div class="check-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12l5 5L20 7" stroke-dasharray="60" />
+          </svg>
+        </div>
+
+        <h1 class="success-title">¡Tarjeta <em>adherida</em>!</h1>
+        <p class="success-msg">
+          Tu suscripción al <strong>Plan Élite</strong> de IronPulse Gym
+          quedó activa correctamente.
+        </p>
+
+        <div class="operation-summary">
+          <div class="summary-section">
+            <h4>Detalles del plan</h4>
+            <div class="summary-row">
+              <span class="k">Plan contratado</span>
+              <span class="v">Élite mensual</span>
+            </div>
+            <div class="summary-row">
+              <span class="k">Monto recurrente</span>
+              <span class="v accent">$35.00 USD</span>
+            </div>
+            <div class="summary-row">
+              <span class="k">Frecuencia</span>
+              <span class="v">Mensual · cada 30 días</span>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <h4>Calendario de pagos</h4>
+            <div class="summary-row">
+              <span class="k">Suscripción inicia</span>
+              <span class="v" id="sub-start">—</span>
+            </div>
+            <div class="summary-row">
+              <span class="k">Primer cargo</span>
+              <span class="v accent" id="first-charge">—</span>
+            </div>
+            <div class="summary-row">
+              <span class="k">Próximo cargo</span>
+              <span class="v" id="next-charge">—</span>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <h4>Método de pago</h4>
+            <div class="summary-row">
+              <span class="k">Tarjeta</span>
+              <span class="v" id="masked-card">•••• 4321</span>
+            </div>
+            <div class="summary-row">
+              <span class="k">Banco emisor</span>
+              <span class="v" id="summary-bank">—</span>
+            </div>
+            <div class="summary-row">
+              <span class="k">Referencia</span>
+              <span class="v"><span class="ref-code" id="ref-code">CPX-000000</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="success-actions">
+          <button class="btn btn-primary" onclick="go('screen-welcome')">Continuar</button>
+          <button class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,.25)" onclick="go('screen-profile')">
+            Ver mi membresía
+          </button>
+        </div>
+
+        <div class="powered on-dark">
+          <span class="label">Procesado por</span>
+          <span class="brand">CORDPEX</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 4: BIENVENIDA ============ -->
+    <section class="screen" id="screen-welcome">
+      <div class="welcome-rings">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="welcome-content">
+        <div class="welcome-icon">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Pesa / mancuerna -->
+            <rect x="4" y="24" width="6" height="16" rx="1.5"/>
+            <rect x="54" y="24" width="6" height="16" rx="1.5"/>
+            <rect x="12" y="20" width="5" height="24" rx="1.5"/>
+            <rect x="47" y="20" width="5" height="24" rx="1.5"/>
+            <line x1="17" y1="32" x2="47" y2="32"/>
+          </svg>
+        </div>
+
+        <div class="welcome-greeting">¡Bienvenid@ a la familia!</div>
+        <h1 class="welcome-title">
+          Disfruta tu
+          <em>Plan Élite</em>
+        </h1>
+        <p class="welcome-msg">
+          Gracias por confiar en <strong>IronPulse Gym</strong>. Tu membresía ya está activa
+          y lista para usar. Es hora de superar tus límites. 💪
+        </p>
+
+        <div class="welcome-perks">
+          <div class="perk">
+            <div class="perk-ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2L4 7v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V7l-8-5z"/></svg>
+            </div>
+            <div class="perk-text">
+              <div class="t">Tu carnet digital está listo</div>
+              <div class="s">Escanea en recepción para entrar</div>
+            </div>
+          </div>
+          <div class="perk">
+            <div class="perk-ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            </div>
+            <div class="perk-text">
+              <div class="t">Reserva tu primera clase</div>
+              <div class="s">+40 clases grupales semanales</div>
+            </div>
+          </div>
+          <div class="perk">
+            <div class="perk-ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>
+            </div>
+            <div class="perk-text">
+              <div class="t">Agenda tu sesión con coach</div>
+              <div class="s">1 sesión gratis incluida este mes</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary welcome-cta" onclick="go('screen-profile')">
+          Ver mi membresía
+        </button>
+
+        <div class="powered" style="margin-top:24px">
+          <span class="label">Procesado por</span>
+          <span class="brand">CORDPEX</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 5: PERFIL / MEMBRESÍA ACTIVA ============ -->
+    <section class="screen" id="screen-profile">
+      <div class="profile-header">
+        <div class="profile-topbar">
+          <button class="back-btn" onclick="go('screen-home')" aria-label="Volver" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h2>Mi perfil</h2>
+          <button class="icon-btn" aria-label="Configuración">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+
+        <div class="avatar-block">
+          <div class="avatar">CR</div>
+          <div class="avatar-info">
+            <div class="name">Carlos Rojas</div>
+            <div class="meta">carlos.rojas@email.com</div>
+            <div class="member-since" id="member-since">Miembro desde hoy</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-body">
+        <!-- Tarjeta principal: suscripción -->
+        <div class="subscription-card">
+          <div class="sub-head">
+            <div class="plan-info">
+              <div class="label">Suscripción activa</div>
+              <div class="name">Plan Élite</div>
+            </div>
+            <div class="status-active">Activa</div>
+          </div>
+
+          <div class="billing-grid">
+            <div class="billing-cell">
+              <div class="lbl">Inicio</div>
+              <div class="val" id="profile-start">—</div>
+            </div>
+            <div class="billing-cell">
+              <div class="lbl">Renueva</div>
+              <div class="val" id="profile-renew">—</div>
+            </div>
+            <div class="billing-cell amount">
+              <div class="lbl">Cargo recurrente</div>
+              <div class="val">$35.00<small>USD / mes</small></div>
+            </div>
+          </div>
+
+          <div class="payment-method">
+            <div class="pm-logo" id="pm-brand">VISA</div>
+            <div class="pm-info">
+              <div class="pm-num" id="pm-num">•••• •••• •••• 4321</div>
+              <div class="pm-bank" id="pm-bank">Banplus · Débito</div>
+            </div>
+          </div>
+
+          <div class="sub-actions">
+            <button class="btn-mini">Cambiar tarjeta</button>
+            <button class="btn-mini danger">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Próximo cargo destacado -->
+        <div class="next-charge-card">
+          <div class="calendar-icon">
+            <div class="month" id="next-month">—</div>
+            <div class="day" id="next-day">—</div>
+          </div>
+          <div class="next-charge-text">
+            <div class="label">Próximo cargo</div>
+            <div class="when" id="next-when">—</div>
+            <div class="amt">$35.00 USD a tu tarjeta •••• <span id="next-last4">4321</span></div>
+          </div>
+        </div>
+
+        <!-- Historial -->
+        <div class="section-label" style="margin-bottom:10px">Historial de pagos</div>
+        <div class="history-list">
+          <div class="history-item">
+            <div class="hist-dot"></div>
+            <div class="hist-info">
+              <div class="t">Suscripción Plan Élite</div>
+              <div class="d" id="hist-date">Pago inicial · hoy</div>
+            </div>
+            <div class="hist-amt">$35.00</div>
+          </div>
+        </div>
+
+        <div class="powered" style="margin-top:20px">
+          <span class="label">Procesado por</span>
+          <span class="brand">CORDPEX</span>
+        </div>
+      </div>
+
+      <!-- Botón flotante del chat con IA -->
+      <button class="chat-fab" onclick="openChat()">
+        <span class="chat-fab-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </span>
+        <span class="chat-fab-text">
+          <span class="top">¿Necesitas ayuda?</span>
+          <span class="bot">Pregúntale a Pulse IA</span>
+        </span>
+      </button>
+    </section>
+
+    <!-- Modal del chat (overlay sobre todo el phone) -->
+    <div class="chat-overlay" id="chat-overlay" onclick="if(event.target===this) closeChat()">
+      <div class="chat-panel">
+        <div class="chat-header" style="position:relative">
+          <div class="grabber"></div>
+          <div class="chat-avatar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v1H7a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-2V5a3 3 0 0 0-3-3z"/>
+              <circle cx="9" cy="13" r="1.2" fill="#fff"/>
+              <circle cx="15" cy="13" r="1.2" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="chat-title">
+            <div class="n">Pulse IA</div>
+            <div class="s">En línea · responde al instante</div>
+          </div>
+          <button class="chat-close" onclick="closeChat()" aria-label="Cerrar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <!-- los mensajes se inyectan aquí -->
+        </div>
+
+        <div class="quick-replies" id="quick-replies">
+          <button class="quick-reply" onclick="sendUserMessage('¿Cuándo fue mi último cobro?')">¿Cuándo fue mi último cobro?</button>
+          <button class="quick-reply" onclick="sendUserMessage('¿Cuándo es mi próximo pago?')">Próximo pago</button>
+          <button class="quick-reply" onclick="sendUserMessage('Quiero ver mi plan')">Mi plan</button>
+          <button class="quick-reply" onclick="sendUserMessage('¿Cómo cancelo?')">¿Cómo cancelo?</button>
+        </div>
+
+        <div class="chat-input-area">
+          <input class="chat-input" id="chat-input" type="text"
+            placeholder="Escribe tu pregunta…"
+            onkeydown="if(event.key==='Enter'){sendUserMessage(this.value);this.value='';}" />
+          <button class="chat-send" onclick="sendUserMessage(document.getElementById('chat-input').value); document.getElementById('chat-input').value='';">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="chat-powered">
+          IA potenciada por <b>CORDPEX</b>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Navegación entre pantallas
+  function go(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(id);
+    target.classList.add('active');
+    // Scroll al tope del screen al cambiar
+    target.scrollTop = 0;
+  }
+
+  // Ir al perfil (solo si hay suscripción activa)
+  function goPerfil(){
+    if(subscription.activa){
+      go('screen-profile');
+    } else {
+      // Si todavía no se ha suscrito, mandarlo al pago
+      go('screen-pay');
+    }
+  }
+
+  // Formato número de tarjeta + reflejo en visual
+  function formatCard(el){
+    let v = el.value.replace(/\D/g,'').slice(0,16);
+    let parts = v.match(/.{1,4}/g) || [];
+    el.value = parts.join(' ');
+    // Refleja en la tarjeta visual
+    let display = (v + '••••••••••••••••').slice(0,16);
+    let pretty = display.match(/.{1,4}/g).join(' ');
+    document.getElementById('card-num').textContent = pretty;
+
+    // Detectar marca simple
+    const bank = document.getElementById('card-bank-name');
+    if(v.startsWith('4')) bank.textContent = 'VISA';
+    else if(/^5[1-5]/.test(v)) bank.textContent = 'MASTERCARD';
+    else if(/^3[47]/.test(v)) bank.textContent = 'AMEX';
+    else bank.textContent = 'TARJETA';
+  }
+
+  function formatExp(el){
+    let v = el.value.replace(/\D/g,'').slice(0,4);
+    if(v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+    el.value = v;
+    document.getElementById('card-exp').textContent = v || 'MM/AA';
+  }
+
+  // Estado global de la suscripción (se llena al confirmar el pago)
+  const subscription = {
+    activa: false,
+    last4: '4321',
+    bank: 'Banplus',
+    brand: 'VISA',
+    holder: '',
+    startDate: null,
+    nextChargeDate: null,
+    refCode: null,
+  };
+
+  const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const MESES_CORTOS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+  function formatFechaLarga(d){
+    return `${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
+  }
+  function formatFechaCorta(d){
+    return `${d.getDate()} ${MESES_CORTOS[d.getMonth()]}`;
+  }
+  function generarRef(){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let s = 'CPX-';
+    for(let i=0;i<8;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    return s;
+  }
+
+  // Submit del formulario de pago — con validación manual + delay de procesamiento
+  function submitPay(e){
+    if(e) e.preventDefault();
+
+    const campos = [
+      {id:'banco',    min:1, label:'banco'},
+      {id:'numero',   min:13, label:'número de tarjeta', strip:true},
+      {id:'titular',  min:3, label:'titular'},
+      {id:'venc',     min:5, label:'vencimiento'},
+      {id:'cvv',      min:3, label:'CVV'},
+      {id:'cedula',   min:6, label:'cédula'},
+    ];
+
+    let primerError = null;
+    campos.forEach(c => {
+      const el = document.getElementById(c.id);
+      let val = el.value.trim();
+      if(c.strip) val = val.replace(/\s/g,'');
+      const invalido = !val || val.length < c.min;
+      el.style.borderColor = invalido ? '#e53935' : '';
+      el.style.boxShadow = invalido ? '0 0 0 3px rgba(229,57,53,.12)' : '';
+      if(invalido && !primerError) primerError = el;
+    });
+
+    if(primerError){
+      primerError.scrollIntoView({behavior:'smooth', block:'center'});
+      primerError.focus({preventScroll:true});
+      return;
+    }
+
+    // Capturar datos antes de procesar
+    const numero  = document.getElementById('numero').value.replace(/\s/g,'');
+    subscription.last4   = numero.slice(-4) || '4321';
+    subscription.bank    = document.getElementById('banco').value;
+    subscription.brand   = document.getElementById('card-bank-name').textContent;
+    subscription.holder  = document.getElementById('titular').value;
+    subscription.refCode = generarRef();
+
+    // Ir a pantalla de procesamiento
+    go('screen-processing');
+    runProcessingSequence();
+  }
+
+  // Secuencia de procesamiento (delay artificial con pasos)
+  function runProcessingSequence(){
+    const stepEl = document.getElementById('processing-step');
+    const pasos = [
+      {t:'Validando datos de tarjeta…',          ms:900},
+      {t:'Conectando con tu banco…',             ms:1100},
+      {t:'Autorizando débito recurrente…',       ms:1100},
+      {t:'Registrando suscripción…',             ms:800},
+    ];
+
+    const ejecutarPaso = (idx) => {
+      // Si llegamos al final, finalizar
+      if(idx >= pasos.length){
+        finalizarPago();
+        return;
+      }
+      const paso = pasos[idx];
+      // Fade out, cambiar texto, fade in
+      stepEl.style.opacity = '0';
+      setTimeout(() => {
+        stepEl.textContent = paso.t;
+        stepEl.style.opacity = '1';
+      }, 180);
+      // Programar el siguiente paso
+      setTimeout(() => ejecutarPaso(idx + 1), paso.ms);
+    };
+
+    ejecutarPaso(0);
+  }
+
+  // Una vez "procesado", calcular fechas, llenar resumen, mostrar éxito + confeti
+  function finalizarPago(){
+    const hoy = new Date();
+    const proximoCargo = new Date(hoy);
+    proximoCargo.setDate(proximoCargo.getDate() + 30);
+
+    subscription.activa = true;
+    subscription.startDate = hoy;
+    subscription.nextChargeDate = proximoCargo;
+
+    // ----- Llenar resumen en pantalla de éxito -----
+    document.getElementById('masked-card').textContent  = '•••• ' + subscription.last4;
+    document.getElementById('summary-bank').textContent = subscription.bank || '—';
+    document.getElementById('ref-code').textContent     = subscription.refCode;
+    document.getElementById('sub-start').textContent    = 'Hoy, ' + formatFechaLarga(hoy);
+    document.getElementById('first-charge').textContent = 'Hoy · $35.00';
+    document.getElementById('next-charge').textContent  = formatFechaLarga(proximoCargo);
+
+    // ----- Llenar pantalla de perfil -----
+    document.getElementById('profile-start').textContent = formatFechaCorta(hoy);
+    document.getElementById('profile-renew').textContent = formatFechaCorta(proximoCargo);
+    document.getElementById('pm-brand').textContent = subscription.brand;
+    document.getElementById('pm-num').textContent = '•••• •••• •••• ' + subscription.last4;
+    document.getElementById('pm-bank').textContent = subscription.bank + ' · Débito';
+    document.getElementById('next-month').textContent = MESES_CORTOS[proximoCargo.getMonth()];
+    document.getElementById('next-day').textContent = proximoCargo.getDate();
+    document.getElementById('next-when').textContent = formatFechaLarga(proximoCargo);
+    document.getElementById('next-last4').textContent = subscription.last4;
+    document.getElementById('hist-date').textContent = 'Pago inicial · ' + formatFechaLarga(hoy);
+    document.getElementById('member-since').textContent = 'Miembro desde ' + formatFechaCorta(hoy);
+
+    // Cambiar la nav inferior del home: poner "Perfil" como activa porque ya tienen suscripción
+    // (opcional, pequeño detalle de coherencia)
+
+    // Pasar a éxito y disparar confeti
+    go('screen-success');
+    launchConfetti();
+  }
+
+  // Limpiar el borde rojo cuando el usuario empiece a corregir
+  // (el script va al final del body, así que los elementos ya existen)
+  ['banco','numero','titular','venc','cvv','cedula'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el){
+      const evt = el.tagName === 'SELECT' ? 'change' : 'input';
+      el.addEventListener(evt, () => {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      });
+    }
+  });
+
+  // Confeti en pantalla de éxito
+  function launchConfetti(){
+    const cont = document.getElementById('confetti');
+    cont.innerHTML = '';
+    const colors = ['#FD6A18','#F7ECD7','#1EA2C1','#7181B5','#E2C293'];
+    for(let i=0; i<32; i++){
+      const s = document.createElement('span');
+      s.style.left = Math.random()*100 + '%';
+      s.style.top = (-Math.random()*200) + 'px';
+      s.style.background = colors[i % colors.length];
+      s.style.animationDelay = (Math.random()*1.5) + 's';
+      s.style.animationDuration = (1.8 + Math.random()*1.5) + 's';
+      s.style.transform = `rotate(${Math.random()*360}deg)`;
+      cont.appendChild(s);
+    }
+  }
+
+  // ============== CHAT IA ==============
+  let chatInicializado = false;
+
+  function openChat(){
+    document.getElementById('chat-overlay').classList.add('open');
+    if(!chatInicializado){
+      chatInicializado = true;
+      // Mensaje de bienvenida personalizado
+      setTimeout(() => {
+        addBotMessage(
+          `¡Hola! Soy <strong>Pulse IA</strong> 👋 Tengo acceso a los detalles de tu membresía y puedo ayudarte con preguntas sobre tus pagos, plan, próximos cargos y mucho más. ¿En qué te ayudo hoy?`
+        );
+      }, 350);
+    }
+  }
+
+  function closeChat(){
+    document.getElementById('chat-overlay').classList.remove('open');
+  }
+
+  function addBotMessage(html, delay=0){
+    setTimeout(() => {
+      const cont = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'msg bot';
+      div.innerHTML = html;
+      cont.appendChild(div);
+      cont.scrollTop = cont.scrollHeight;
+    }, delay);
+  }
+
+  function addUserMessage(text){
+    const cont = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.className = 'msg user';
+    div.textContent = text;
+    cont.appendChild(div);
+    cont.scrollTop = cont.scrollHeight;
+  }
+
+  function showTyping(){
+    const cont = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.className = 'typing';
+    div.id = 'typing-indicator';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    cont.appendChild(div);
+    cont.scrollTop = cont.scrollHeight;
+  }
+
+  function hideTyping(){
+    const t = document.getElementById('typing-indicator');
+    if(t) t.remove();
+  }
+
+  function sendUserMessage(text){
+    if(!text || !text.trim()) return;
+    text = text.trim();
+    addUserMessage(text);
+
+    // Ocultar quick replies después del primer mensaje del usuario
+    document.getElementById('quick-replies').style.display = 'none';
+
+    // Simular pensar
+    showTyping();
+    setTimeout(() => {
+      hideTyping();
+      respondToMessage(text);
+    }, 900 + Math.random()*500);
+  }
+
+  // "IA" basada en keywords sobre los datos reales de la suscripción
+  function respondToMessage(text){
+    const q = text.toLowerCase();
+
+    // Validar si hay datos de suscripción
+    if(!subscription.activa){
+      addBotMessage('Aún no tienes una suscripción activa. Te invito a explorar el Plan Élite desde el inicio.');
+      return;
+    }
+
+    const hoy = subscription.startDate;
+    const next = subscription.nextChargeDate;
+
+    // Último cobro / pago / cargo
+    if(/(último|ultimo|reciente|pasado).*(cobro|pago|cargo|debito|débito)|cuándo.*(pague|cobr)|último/.test(q)){
+      const card = `
+        <div class="msg-card">
+          <div class="r"><span class="k">Concepto</span><span class="v">Suscripción Plan Élite</span></div>
+          <div class="r"><span class="k">Fecha</span><span class="v">${formatFechaLarga(hoy)}</span></div>
+          <div class="r"><span class="k">Monto</span><span class="v accent">$35.00 USD</span></div>
+          <div class="r"><span class="k">Tarjeta</span><span class="v">${subscription.brand} •••• ${subscription.last4}</span></div>
+          <div class="r"><span class="k">Banco</span><span class="v">${subscription.bank}</span></div>
+          <div class="r"><span class="k">Referencia</span><span class="v" style="font-family:monospace;font-size:11px">${subscription.refCode}</span></div>
+          <div class="r"><span class="k">Estado</span><span class="v" style="color:#0f8a3a">✓ Aprobado</span></div>
+        </div>
+      `;
+      addBotMessage(`Tu último cobro fue <strong>hoy</strong>, al activar tu suscripción. Aquí está el detalle:${card}`);
+      return;
+    }
+
+    // Próximo pago / cargo
+    if(/(próx|prox|siguiente|cuándo|cuando).*(pag|cobr|carg|deb)/.test(q) || /próximo|proximo|siguiente/.test(q)){
+      const diasRestantes = Math.ceil((next - new Date()) / (1000*60*60*24));
+      addBotMessage(`Tu próximo cargo será el <strong>${formatFechaLarga(next)}</strong> (en ${diasRestantes} días). Se debitarán automáticamente <strong>$35.00 USD</strong> de tu tarjeta ${subscription.brand} •••• ${subscription.last4}.<br><br>Recibirás una notificación 3 días antes. 🔔`);
+      return;
+    }
+
+    // Plan / membresía
+    if(/(plan|membres|suscrip|élite|elite)/.test(q)){
+      const card = `
+        <div class="msg-card">
+          <div class="r"><span class="k">Plan</span><span class="v">Élite mensual</span></div>
+          <div class="r"><span class="k">Estado</span><span class="v" style="color:#0f8a3a">● Activa</span></div>
+          <div class="r"><span class="k">Inicio</span><span class="v">${formatFechaLarga(hoy)}</span></div>
+          <div class="r"><span class="k">Renovación</span><span class="v">${formatFechaLarga(next)}</span></div>
+          <div class="r"><span class="k">Costo mensual</span><span class="v accent">$35.00 USD</span></div>
+        </div>
+      `;
+      addBotMessage(`Tienes el <strong>Plan Élite</strong>. Aquí los detalles:${card}<br>Incluye acceso a las 3 sedes, clases ilimitadas y 1 sesión mensual con coach.`);
+      return;
+    }
+
+    // Cancelar
+    if(/cancel|baja|terminar|dar de baja/.test(q)){
+      addBotMessage(`Puedes cancelar tu suscripción cuando quieras desde el botón <strong>"Cancelar"</strong> en tu perfil. No hay penalizaciones ni permanencia.<br><br>Si cancelas hoy, mantienes tu acceso hasta el <strong>${formatFechaLarga(next)}</strong> y no se hará el siguiente cobro. ¿Quieres que te ayude con algo más antes?`);
+      return;
+    }
+
+    // Cambiar tarjeta
+    if(/cambiar.*tarjeta|nueva tarjeta|actualizar.*tarjeta|otra tarjeta/.test(q)){
+      addBotMessage(`Para cambiar tu tarjeta de débito recurrente, toca el botón <strong>"Cambiar tarjeta"</strong> en tu perfil. El nuevo método se usará a partir del próximo cargo (${formatFechaLarga(next)}).`);
+      return;
+    }
+
+    // Monto / cuánto / precio
+    if(/(cuánto|cuanto|monto|precio|costo|cobrar)/.test(q)){
+      addBotMessage(`Tu plan tiene un costo de <strong>$35.00 USD mensuales</strong>. El cobro es automático cada 30 días desde la fecha de afiliación.`);
+      return;
+    }
+
+    // Sedes / ubicación
+    if(/(sede|ubicac|dónde|donde|sucursal)/.test(q)){
+      addBotMessage(`Con tu Plan Élite tienes acceso a las <strong>3 sedes</strong> de IronPulse Gym:<br>📍 Las Mercedes<br>📍 Altamira<br>📍 La Castellana<br><br>Todas abiertas 24/7 con tu carnet digital.`);
+      return;
+    }
+
+    // Saludo
+    if(/(hola|buenas|hey|saludos|hi)/.test(q)){
+      addBotMessage(`¡Hola ${subscription.holder ? subscription.holder.split(' ')[0] : ''}! ¿En qué te puedo ayudar? Puedo darte info sobre tus pagos, próximos cobros, tu plan, sedes, o ayudarte a cancelar.`);
+      return;
+    }
+
+    // Gracias
+    if(/(gracias|thank)/.test(q)){
+      addBotMessage(`¡A ti! 💪 Si necesitas algo más, aquí estoy.`);
+      return;
+    }
+
+    // Fallback
+    addBotMessage(`Puedo ayudarte con información sobre:<br>• Tus pagos pasados y futuros<br>• Detalles de tu plan<br>• Cambiar tu tarjeta<br>• Cancelar tu suscripción<br>• Sedes y horarios<br><br>¿Sobre qué quieres saber?`);
+  }
+</script>
+
+</body>
+</html>
